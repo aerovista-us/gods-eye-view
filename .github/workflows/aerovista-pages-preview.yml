@@ -1,0 +1,60 @@
+name: AeroVista Free GitHub Pages Preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: aerovista-pages-preview
+  cancel-in-progress: true
+
+jobs:
+  pages:
+    if: github.repository == 'aerovista-us/gods-eye-view'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      CI: 'true'
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+      GEV_REQUIRE_ALLOCATION_GATE: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - name: Build Pages-specific static bundle
+        run: npx vite build --base=/gods-eye-view/
+      - name: Rewrite root-relative HTML assets for project Pages
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for p in Path('dist').rglob('*.html'):
+              s = p.read_text()
+              s = re.sub(r'(\b(?:href|src)=["\'])/(?!/|gods-eye-view/)', r'\1/gods-eye-view/', s)
+              p.write_text(s)
+          PY
+      - name: Assert asset references resolve
+        run: |
+          test -f dist/index.html
+          test -d dist/assets
+          ! grep -Eq '(src|href)="/(assets|icons|logo.svg|manifest.webmanifest|style.css)' dist/index.html
+      - name: Disable Jekyll processing
+        run: touch dist/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
