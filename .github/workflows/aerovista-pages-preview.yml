@@ -59,6 +59,13 @@ jobs:
               s = re.sub(r'(\b(?:href|src)=["\'])/(?!/|gods-eye-view/)', r'\1/gods-eye-view/', s)
               p.write_text(s)
           PY
+      - name: Apply Horizon Aerial Pages-only branding
+        run: node scripts/horizon-pages-brand.mjs
+      - name: Verify Horizon branding files
+        run: |
+          test -s dist/horizon-mark.svg
+          test -s dist/horizon-brand.css
+          grep -q 'HORIZON' dist/index.html
       - name: Assert asset references resolve
         run: |
           test -f dist/index.html
