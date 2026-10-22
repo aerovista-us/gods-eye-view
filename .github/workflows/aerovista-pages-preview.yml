@@ -33,6 +33,8 @@ jobs:
           node-version: 24.14.0
           cache: npm
       - run: npm ci
+      - name: Configure Coeur d'Alene opening camera (Pages only)
+        run: node scripts/horizon-pages-cda-start.mjs
       - name: Build Pages-specific static bundle
         run: npx vite build --base=/gods-eye-view/
       - name: Include Cesium standalone browser runtime
