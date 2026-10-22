@@ -21,6 +21,7 @@ html=html.replace(/<span class="first-run-kicker"[^>]*>.*?<\/span>/,'<span class
 html=html.replace(/<h2 id="first-run-title"[^>]*>.*?<\/h2>/,'<h2 id="first-run-title">Explore the world from a new perspective</h2>');
 html=html.replace(/<p id="first-run-description"[^>]*>.*?<\/p>/,'<p id="first-run-description">Choose a view to explore public signals across Earth. Data availability varies by source.</p>');
 html=html.replace(/<span class="key-setup-kicker"[^>]*>.*?<\/span>/,'<span class="key-setup-kicker">HORIZON / SOURCE CONFIGURATION</span>');
+html=html.replace('</head>','  <link rel="preconnect" href="https://fonts.googleapis.com" />\n  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />\n</head>');
 writeFileSync(page,html);
 appendFileSync(join(root,'horizon-brand.css'),`
 /* Horizon operator-grade global visual system, Pages-only. */
