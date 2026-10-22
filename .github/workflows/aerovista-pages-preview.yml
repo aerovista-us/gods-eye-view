@@ -35,6 +35,20 @@ jobs:
       - run: npm ci
       - name: Build Pages-specific static bundle
         run: npx vite build --base=/gods-eye-view/
+      - name: Include Cesium standalone browser runtime
+        run: |
+          set -eu
+          cesium_dir=node_modules/cesium/Build/Cesium
+          test -s "$cesium_dir/Cesium.js"
+          test -s "$cesium_dir/Widgets/widgets.css"
+          mkdir -p dist/cesium
+          cp -a "$cesium_dir/." dist/cesium/
+      - name: Assert required Cesium runtime files
+        run: |
+          test -s dist/cesium/Cesium.js
+          test -s dist/cesium/Widgets/widgets.css
+          test -d dist/cesium/Assets
+          test -d dist/cesium/Workers
       - name: Rewrite root-relative HTML assets for project Pages
         run: |
           python3 - <<'PY'
