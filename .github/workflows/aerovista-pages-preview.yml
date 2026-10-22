@@ -61,6 +61,13 @@ jobs:
           PY
       - name: Apply Horizon Aerial Pages-only branding
         run: node scripts/horizon-pages-brand.mjs
+      - name: Apply Horizon UI-wide visual system
+        run: node scripts/horizon-pages-ui.mjs
+      - name: Verify Horizon splash and mission interface
+        run: |
+          grep -q 'horizon-splash-title' dist/index.html
+          grep -q 'HORIZON / MISSION SELECTION' dist/index.html
+          grep -q 'horizon-splash-rule' dist/horizon-brand.css
       - name: Verify Horizon branding files
         run: |
           test -s dist/horizon-mark.svg
